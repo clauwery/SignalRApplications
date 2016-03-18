@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsServiceClient", "Win
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplicationClient", "WpfApplicationClient\WpfApplicationClient.csproj", "{A424EA96-D37A-4A63-8AB4-D70A1D5CA2A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XilApiDemo", "..\XilApiDemo\XilApiDemo\XilApiDemo.csproj", "{F87A34E7-42C0-4CCB-A037-4A565B84680D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{A424EA96-D37A-4A63-8AB4-D70A1D5CA2A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A424EA96-D37A-4A63-8AB4-D70A1D5CA2A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A424EA96-D37A-4A63-8AB4-D70A1D5CA2A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F87A34E7-42C0-4CCB-A037-4A565B84680D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F87A34E7-42C0-4CCB-A037-4A565B84680D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F87A34E7-42C0-4CCB-A037-4A565B84680D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F87A34E7-42C0-4CCB-A037-4A565B84680D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

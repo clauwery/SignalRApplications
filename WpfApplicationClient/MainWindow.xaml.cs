@@ -13,57 +13,196 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.AspNet.SignalR.Client;
+using System.Threading;
+
+using ASAM.XIL.Interfaces.Testbench;
+using ASAM.XIL.Interfaces.Testbench.Common.Error;
+using ASAM.XIL.Interfaces.Testbench.Common.ValueContainer;
+using ASAM.XIL.Implementation.TestbenchFactory.Testbench;
+using ASAM.XIL.Interfaces.Testbench.MAPort.Enum;
+using ASAM.XIL.Interfaces.Testbench.MAPort;
+
+using dSPACE.PlatformManagement.Automation;
+
+
+namespace XilApiTools
+{
+    class Connection_Basics
+    {
+        static Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
+        IPmPlatformManagement PlatformManagement = Activator.CreateInstance(serverType) as IPmPlatformManagement;
+        public IPmSeekedPlatforms Platforms;
+
+        public void RegisterPlatform()
+        {
+            IPmMABXRegisterInfo RegisterInfo = (IPmMABXRegisterInfo)PlatformManagement.CreatePlatformRegistrationInfo(PlatformType.MABX);
+            try
+            {
+                PlatformManagement.RegisterPlatform(RegisterInfo);
+            }
+            catch
+            {
+                // Catch exceptions like "Encountered a network error. Check if the net box is switched on."
+            }
+        }
+
+        public void Clear()
+        {
+            PlatformManagement.ClearSystem(true);
+        }
+
+        public void GetPlatforms()
+        {
+            // IPmSeekedPlatforms Platforms = (IPmSeekedPlatforms)PlatformManagement.Platforms;
+            this.Platforms = (IPmSeekedPlatforms)PlatformManagement.Platforms;
+            // return Platforms;
+        }
+    }
+
+    class Port_Basics
+    {
+        private string MAPortConfigFile = @"..\Models\MAPortConfig.xml";
+        private string vendorName = "dSPACE GmbH";
+        private string productName = "XIL API";
+        private string productVersion = "2015-B";
+        private IList<string> VariableNames;
+        public IMAPort MAPort;
+        public void Initialise()
+        {
+            try
+            {
+                ITestbenchFactory TBFactory = new TestbenchFactory();
+                ITestbench TB = TBFactory.CreateVendorSpecificTestbench(vendorName, productName, productVersion);
+                MAPort = TB.MAPortFactory.CreateMAPort("MAPort");
+                IMAPortConfig maPortConfig = MAPort.LoadConfiguration(MAPortConfigFile);
+                MAPort.Configure(maPortConfig, false);
+            }
+            catch (TestbenchPortException ex)
+            {
+                Console.WriteLine("A XIL API TestbenchPortException occurred:");
+                Console.WriteLine("Error description: {0}", ex.CodeDescription);
+                Console.WriteLine("Detailed error description: {0}", ex.VendorCodeDescription);
+                Console.ReadLine();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("A system exception occurred:");
+                Console.WriteLine("Error description: {0}", ex.Message);
+            }
+            finally
+            {
+                // Dispose any instances of MAPort, Capture, and EESPort
+            }
+        }
+        public double Read(string variableName)
+        {
+            if (MAPort!=null && MAPort.VariableNames.Contains(variableName) && MAPort.IsReadable(variableName))
+            {
+                IFloatValue value = (IFloatValue)MAPort.Read(variableName);
+                return value.Value;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+
+}
 
 namespace WpfApplicationClient
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        // OK to have this "GLOBAL" ?
+        // Why must proxy be STATIC ?
+        // Why / how does IISExpress automatically startup when debugging this project (not related to SignalRChat in which server runs)
+        static HubConnection connection = new HubConnection("http://localhost:50387");
+        static IHubProxy proxy = connection.CreateHubProxy("chatHub");
+
+        static XilApiTools.Connection_Basics XilConnection = new XilApiTools.Connection_Basics();
+        static XilApiTools.Port_Basics PortConnection = new XilApiTools.Port_Basics();
+
         public MainWindow()
         {
             InitializeComponent();
+            connection.StateChanged += new Action<StateChange>(OnMyEvent);
         }
-
         private void OnMyEvent(StateChange obj)
         {
             switch (obj.NewState)
             {
-                case ConnectionState.Connected:
-                    textBlock.Text = "Connected";
+                case Microsoft.AspNet.SignalR.Client.ConnectionState.Connected:
+                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connected"));
                     break;
-                case ConnectionState.Connecting:
-                    textBlock.Text = "Connecting";
+                case Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting:
+                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connecting"));
                     break;
-                case ConnectionState.Disconnected:
-                    textBlock.Text = "Disconnected";
+                case Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected:
+                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Disconnected"));
                     break;
-                case ConnectionState.Reconnecting:
-                    textBlock.Text = "Reconnecting";
+                case Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting:
+                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Reconnecting"));
                     break;
             }
         }
-
-        void Init(string ServerName)
+        async void Connect()
         {
-            var connection = new HubConnection("http://localhost:50387");
-            connection.StateChanged += new Action<StateChange>(OnMyEvent);
-            var proxy = connection.CreateHubProxy("chatHub");
-            connection.Start().Wait();
+            await connection.Start();
         }
-
-        private void button_Click(object sender, RoutedEventArgs e)
+        void Disconnect()
         {
-            dataGrid.Items.Add("test");
-            Init("ServerName1");
-
-
+            connection.Stop();
         }
-
+        private void connect_hub_button_Click(object sender, RoutedEventArgs e)
+        {
+            // dataGrid.Items.Add("test");
+            Connect();
+        }
+        private void disconnect_hub_button_Click(object sender, RoutedEventArgs e)
+        {
+            Disconnect();
+        }
         private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+        private void Send_Click(object sender, RoutedEventArgs e)
+        {
+            string[] data = new string[] { "ServerName", "Message", "Value" };
+            try
+            {
+                proxy.Invoke("send", data);
+            }
+            catch (Exception)
+            {
+                // throw;
+            }  
+        }
+        private void register_xil_button_Click(object sender, RoutedEventArgs e)
+        {
+            XilConnection.RegisterPlatform();
+            update_platform_list();
+            PortConnection.Initialise();
+        }
+        private void clear_xil_button_Click(object sender, RoutedEventArgs e)
+        {
+            XilConnection.Clear();
+            update_platform_list();
+        }
+        private void update_platform_list()
+        {
+            if (XilConnection.Platforms != null)
+            {
+                platforms.Text = XilConnection.Platforms.Count.ToString();
+            }
+        }
+
+        private void read_xil_variable_button_Click(object sender, RoutedEventArgs e)
+        {
+            string variableName = "Platform()://currentTime";
+            read_xil_variable_text.Text = PortConnection.Read(variableName).ToString();
+            
         }
     }
 }
