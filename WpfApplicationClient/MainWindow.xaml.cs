@@ -32,31 +32,49 @@ namespace XilApiTools
         static Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
         IPmPlatformManagement PlatformManagement = Activator.CreateInstance(serverType) as IPmPlatformManagement;
         public IPmSeekedPlatforms Platforms;
-
-        public void RegisterPlatform()
+        public string RegisterPlatform(string platformName)
         {
-            IPmMABXRegisterInfo RegisterInfo = (IPmMABXRegisterInfo)PlatformManagement.CreatePlatformRegistrationInfo(PlatformType.MABX);
+            string Message = "";
             try
             {
+                PlatformType platformType = (PlatformType)Enum.Parse(typeof(PlatformType), platformName);
+                IPmMABXRegisterInfo RegisterInfo = (IPmMABXRegisterInfo)PlatformManagement.CreatePlatformRegistrationInfo(platformType);
                 PlatformManagement.RegisterPlatform(RegisterInfo);
             }
-            catch
+            catch(Exception ex)
             {
-                // Catch exceptions like "Encountered a network error. Check if the net box is switched on."
+                Message = ex.Message;
             }
+            return Message;
         }
-
-        public void Clear()
+        public string Clear()
         {
-            PlatformManagement.ClearSystem(true);
+            string Message = "";
+            try
+            {
+                PlatformManagement.ClearSystem(true);
+            }
+            catch(System.Exception ex)
+            {
+                Message = ex.Message;
+            }
+            return Message;
         }
-
         public void GetPlatforms()
         {
-            // IPmSeekedPlatforms Platforms = (IPmSeekedPlatforms)PlatformManagement.Platforms;
-            this.Platforms = (IPmSeekedPlatforms)PlatformManagement.Platforms;
-            // return Platforms;
+            Platforms = (IPmSeekedPlatforms)PlatformManagement.Platforms;
         }
+
+/*        public string[] GetPlatformTypes()
+        {
+            foreach(PlatformType foo in PlatformType.GetValues(typeof(PlatformType)))
+            {
+                platformType[] = foo.ToString();
+            }
+            
+        }
+        */
+        
     }
 
     class Port_Basics
@@ -96,7 +114,7 @@ namespace XilApiTools
         }
         public double Read(string variableName)
         {
-            if (MAPort!=null && MAPort.VariableNames.Contains(variableName) && MAPort.IsReadable(variableName))
+            if (MAPort!=null && MAPort.State==MAPortState.eSIMULATION_RUNNING && MAPort.VariableNames.Contains(variableName) && MAPort.IsReadable(variableName))
             {
                 IFloatValue value = (IFloatValue)MAPort.Read(variableName);
                 return value.Value;
@@ -127,6 +145,11 @@ namespace WpfApplicationClient
         {
             InitializeComponent();
             connection.StateChanged += new Action<StateChange>(OnMyEvent);
+            // Populate platform types
+            // WHERE SHOULD I DO THIS?
+            foreach (PlatformType s in Enum.GetValues(typeof(PlatformType)))
+                comboBox.Items.Add(s.ToString());
+            comboBox.SelectedIndex = 0;
         }
         private void OnMyEvent(StateChange obj)
         {
@@ -181,13 +204,14 @@ namespace WpfApplicationClient
         }
         private void register_xil_button_Click(object sender, RoutedEventArgs e)
         {
-            XilConnection.RegisterPlatform();
+            string platformName = comboBox.SelectedItem.ToString();
+            status_message_text.Text = XilConnection.RegisterPlatform(platformName);
             update_platform_list();
             PortConnection.Initialise();
         }
         private void clear_xil_button_Click(object sender, RoutedEventArgs e)
         {
-            XilConnection.Clear();
+            status_message_text.Text = XilConnection.Clear();
             update_platform_list();
         }
         private void update_platform_list()
@@ -197,7 +221,6 @@ namespace WpfApplicationClient
                 platforms.Text = XilConnection.Platforms.Count.ToString();
             }
         }
-
         private void read_xil_variable_button_Click(object sender, RoutedEventArgs e)
         {
             string variableName = "Platform()://currentTime";
