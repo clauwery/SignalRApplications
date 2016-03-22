@@ -121,6 +121,12 @@ namespace XilApiTools
 
 namespace WpfApplicationClient
 {
+    public class Server
+    {
+        public string identifier { get; set; }
+        public string ip { get; set; }
+        public string ping { get; set; }
+    }
     public partial class MainWindow : Window
     {
         // OK to have this "GLOBAL" ?
@@ -162,7 +168,10 @@ namespace WpfApplicationClient
         {
             await connection.Start();
             await proxy.Invoke("UpdateTime", new string[] {"TIME"});
-            await proxy.Invoke("CreateRecord", new string[] {"NAME"});
+            Server record = new Server();
+            record.identifier = "ezohfzeh";
+            await proxy.Invoke("CreateRecord", record);
+            // await proxy.Invoke("CreateRecord", new string[] { "NAME" });
         }
         void Disconnect()
         {

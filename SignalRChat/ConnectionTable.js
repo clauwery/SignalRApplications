@@ -2,7 +2,7 @@
  
         //Prepare jtable plugin
         $('#TestTableContainer').jtable({
-            title: 'The Student List',
+            title: 'Server overview',
             paging: false, //Enables paging
             // pageSize: 10, //Actually this is not needed since default value is 10.
             sorting: false, //Enables sorting
@@ -16,24 +16,30 @@
             },
 */
             fields: {
-                StudentId: {
+                identifier: {
+                    title: 'identifier',
+                    width: '23%',
                     key: true,
-                    create: false,
-                    edit: false,
-                    list: false
+                    // create: true,
+                    // edit: false,
+                    // list: false
                 },
-                Name: {
-                    title: 'Name',
+                ip: {
+                    title: 'IP',
                     width: '23%'
-                }
-            }
+                },
+                ping: {
+                    title: 'PING',
+                    width: '23%'
+        }
+    }
         });
 
         // Populate table
         $('#TestTableContainer').jtable('addRecord', {
             record: {
-                StudentId: 1,
-                Name: 'Me',
+                identifier: 'abcd',
+                ip: '1.1.1.1',
             },
             clientOnly: true
         });

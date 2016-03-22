@@ -9,7 +9,6 @@ namespace SignalRChat
 {
     public class ChatHub : Hub
     {
-        private int counter = 0;
         public void Send(string name, string message, string value)
         {
             // Call the broadcastMessage method to update clients.
@@ -29,12 +28,8 @@ namespace SignalRChat
         {
             return Groups.Add(Context.ConnectionId, "webClients");
         }
-        public void CreateRecord(string name)
+        public void CreateRecord(object record)
         {
-            counter += 1;
-            Student record = new Student();
-            record.StudentId = counter;
-            record.Name = name;
             Clients.All.createRecord(record);
         }
     }
