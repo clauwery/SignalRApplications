@@ -60,7 +60,6 @@ namespace XilApiTools
             return Message;
         }
     }
-
     class Port_Basics
     {
         private string MAPortConfigFile = @"MAPortConfig.xml";
@@ -118,7 +117,6 @@ namespace XilApiTools
             }
         }
     }
-
 }
 
 namespace WpfApplicationClient
@@ -163,6 +161,8 @@ namespace WpfApplicationClient
         async void Connect()
         {
             await connection.Start();
+            await proxy.Invoke("UpdateTime", new string[] {"TIME"});
+            await proxy.Invoke("CreateRecord", new string[] {"NAME"});
         }
         void Disconnect()
         {
