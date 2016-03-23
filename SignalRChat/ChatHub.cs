@@ -53,5 +53,12 @@ namespace SignalRChat
             // Clients.All.createRecord(Context.ConnectionId);
             // Clients.All.createRecord(record);
         }
+        public void UpdateRecord(object record)
+        {
+            Clients.All.updateRecord(Context.ConnectionId, record);
+            // Clients.Group("xilServers").createRecord(Context.ConnectionId);
+            // Clients.All.createRecord(Context.ConnectionId);
+            // Clients.All.createRecord(record);
+        }
     }
 }

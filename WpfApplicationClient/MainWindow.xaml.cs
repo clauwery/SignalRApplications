@@ -135,21 +135,29 @@ namespace WpfApplicationClient
         public void DoWork()
         {
             proxy.Invoke("createRecord");
+            Server record1 = new Server("Test1");
+            record1.ip = "1";
+            Server record2 = new Server("Test2");
+            record2.ip = "2";
             while (connection.State== Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
             {
                 try
                 {
+                    // Check XIL connection
+                    // Read variables
+                    // Update record
                     record.ping = "1";
-                    proxy.Invoke("UpdateTime", new string[] { "TIME1" });
-                    Thread.Sleep(100);
-                    proxy.Invoke("UpdateTime", new string[] { "TIME2" });
-                    Thread.Sleep(100);
+                    // proxy.Invoke("UpdateTime", new string[] { "TIME1" });
+                    proxy.Invoke("UpdateRecord", record1);
+                    Thread.Sleep(500);
+                    // proxy.Invoke("UpdateTime", new string[] { "TIME2" });
+                    proxy.Invoke("UpdateRecord", record2);
+                    Thread.Sleep(500);
                 }
                 catch
                 {
                     // Client disconnected but still in while loop
                 }
-            // proxy.Invoke("deleteRecord");
             }
         }
         public void RequestStop()
