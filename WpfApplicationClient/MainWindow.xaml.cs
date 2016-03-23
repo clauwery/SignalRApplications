@@ -121,11 +121,54 @@ namespace XilApiTools
 
 namespace WpfApplicationClient
 {
+    public class Worker
+    {
+        public IHubProxy proxy;
+        public Server record;
+        public IConnection connection;
+        public Worker(HubConnection connection, IHubProxy proxy, Server record)
+        {
+            this.connection = connection;
+            this.proxy = proxy;
+            this.record = record;
+        }
+        public void DoWork()
+        {
+            proxy.Invoke("createRecord");
+            while (connection.State== Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+            {
+                try
+                {
+                    record.ping = "1";
+                    proxy.Invoke("UpdateTime", new string[] { "TIME1" });
+                    Thread.Sleep(100);
+                    proxy.Invoke("UpdateTime", new string[] { "TIME2" });
+                    Thread.Sleep(100);
+                }
+                catch
+                {
+                    // Client disconnected but still in while loop
+                }
+            // proxy.Invoke("deleteRecord");
+            }
+        }
+        public void RequestStop()
+        {
+            _shouldStop = true;
+        }
+        // Volatile is used as hint to the compiler that this data 
+        // member will be accessed by multiple threads. 
+        private volatile bool _shouldStop;
+    }
     public class Server
     {
         public string identifier { get; set; }
         public string ip { get; set; }
         public string ping { get; set; }
+        public Server(string identifier)
+        {
+            this.identifier = identifier;
+        }
     }
     public partial class MainWindow : Window
     {
@@ -137,6 +180,9 @@ namespace WpfApplicationClient
 
         static XilApiTools.Connection_Basics XilConnection = new XilApiTools.Connection_Basics();
         static XilApiTools.Port_Basics PortConnection = new XilApiTools.Port_Basics();
+        static Server record = new Server("myIdentifier");
+        static Worker worker = new Worker(connection, proxy, record);
+        
 
         public MainWindow()
         {
@@ -152,6 +198,8 @@ namespace WpfApplicationClient
             {
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Connected:
                     textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connected"));
+                    Thread workerThread = new Thread(worker.DoWork);
+                    workerThread.Start();
                     break;
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting:
                     textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connecting"));
@@ -166,15 +214,12 @@ namespace WpfApplicationClient
         }
         async void Connect()
         {
+            // Rename to BUTTON function names
             await connection.Start();
-            await proxy.Invoke("UpdateTime", new string[] {"TIME"});
-            Server record = new Server();
-            record.identifier = "ezohfzeh";
-            await proxy.Invoke("CreateRecord", record);
-            // await proxy.Invoke("CreateRecord", new string[] { "NAME" });
         }
         void Disconnect()
         {
+            // Rename to BUTTON function names
             connection.Stop();
         }
         private void connect_hub_button_Click(object sender, RoutedEventArgs e)

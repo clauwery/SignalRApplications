@@ -21,16 +21,37 @@ namespace SignalRChat
         }
         public override Task OnConnected()
         {
-            // Clients.Group("xilServers").onConnected(Context.ConnectionId);
+            //Clients.All.onConnected(Context.ConnectionId);
+            // Clients.All.createRecord(Context.ConnectionId);
             return base.OnConnected();
+        }
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            // Will also disconnect WEB clients not only XIL clients that created a record
+            Clients.All.deleteRecord(Context.ConnectionId);
+            return base.OnDisconnected(stopCalled);
         }
         public Task JoinWebClients()
         {
             return Groups.Add(Context.ConnectionId, "webClients");
         }
-        public void CreateRecord(object record)
+        public Task JoinXilServers()
         {
-            Clients.All.createRecord(record);
+            return Groups.Add(Context.ConnectionId, "xilServers");
+        }
+        public void CreateRecord()
+        {
+            Clients.All.createRecord(Context.ConnectionId);
+            // Clients.Group("xilServers").createRecord(Context.ConnectionId);
+            // Clients.All.createRecord(Context.ConnectionId);
+            // Clients.All.createRecord(record);
+        }
+        public void DeleteRecord()
+        {
+            Clients.All.deleteRecord(Context.ConnectionId);
+            // Clients.Group("xilServers").createRecord(Context.ConnectionId);
+            // Clients.All.createRecord(Context.ConnectionId);
+            // Clients.All.createRecord(record);
         }
     }
 }

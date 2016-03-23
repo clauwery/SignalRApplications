@@ -36,6 +36,7 @@
         });
 
         // Populate table
+        /*
         $('#TestTableContainer').jtable('addRecord', {
             record: {
                 identifier: 'abcd',
@@ -43,6 +44,7 @@
             },
             clientOnly: true
         });
+        */
         //Load student list from server
         // $('#StudentTableContainer').jtable('load');
     });

@@ -6,16 +6,13 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRChat", "SignalRChat\SignalRChat.csproj", "{42A4BBC6-AB00-4F32-84A5-B2A7E9D947D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{B31FA556-FE61-454E-B40C-C6DA6412EED1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{42A4BBC6-AB00-4F32-84A5-B2A7E9D947D6} = {42A4BBC6-AB00-4F32-84A5-B2A7E9D947D6}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsServiceClient", "WindowsServiceClient\WindowsServiceClient.csproj", "{E24D0108-066E-433F-9AFB-8348FC8A86CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplicationClient", "WpfApplicationClient\WpfApplicationClient.csproj", "{A424EA96-D37A-4A63-8AB4-D70A1D5CA2A6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{42A4BBC6-AB00-4F32-84A5-B2A7E9D947D6} = {42A4BBC6-AB00-4F32-84A5-B2A7E9D947D6}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplicationClient", "WpfApplicationClient\WpfApplicationClient.csproj", "{A424EA96-D37A-4A63-8AB4-D70A1D5CA2A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XilApiDemo", "..\XilApiDemo\XilApiDemo\XilApiDemo.csproj", "{F87A34E7-42C0-4CCB-A037-4A565B84680D}"
 EndProject

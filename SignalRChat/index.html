@@ -64,13 +64,31 @@
 //            }
 
             // http://jtable.org/ApiReference/Methods
+            /*
             chat.client.createRecord = function (record) {
                 $('#TestTableContainer').jtable('addRecord', {
                     record: record,
                     clientOnly: true
                 });
             };
+            */
+            chat.client.createRecord = function (identifier) {
+                $('#TestTableContainer').jtable('addRecord', {
+                    record: {
+                        identifier: identifier,
+                        ip: "1.2.3.4",
+                        ping: "1"
+                    },
+                    clientOnly: true
+                });
+            };
 
+            chat.client.deleteRecord = function (identifier) {
+                $('#TestTableContainer').jtable('deleteRecord', {
+                    key: identifier,
+                    clientOnly: true
+                });
+            };
 
             // Get the user name and store it to prepend to messages.
             // $('#displayname').val(prompt('Enter your name:', ''));
