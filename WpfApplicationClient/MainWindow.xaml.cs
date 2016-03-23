@@ -24,7 +24,6 @@ using ASAM.XIL.Interfaces.Testbench.MAPort;
 
 using dSPACE.PlatformManagement.Automation;
 
-
 namespace XilApiTools
 {
     class Connection_Basics
@@ -60,7 +59,7 @@ namespace XilApiTools
             return Message;
         }
     }
-    class Port_Basics
+    public class Port_Basics
     {
         private string MAPortConfigFile = @"MAPortConfig.xml";
         private string vendorName = "dSPACE GmbH";
@@ -116,6 +115,18 @@ namespace XilApiTools
                 return -1;
             }
         }
+        public bool Connected()
+        {
+            if (MAPort==null)
+            {
+                return false;
+            }
+            else
+            {
+                return MAPort.State.Equals(dSPACE.PlatformManagement.Automation.ConnectionState.Connected);
+            }
+            
+        }
     }
 }
 
@@ -123,35 +134,45 @@ namespace WpfApplicationClient
 {
     public class Worker
     {
-        public IHubProxy proxy;
-        public Server record;
-        public IConnection connection;
-        public Worker(HubConnection connection, IHubProxy proxy, Server record)
+        public IConnection hubConnection; // connection to HUB
+        public IHubProxy hubProxy; // proxy to talk to HUB
+        public Server record; // Record to build table
+        public XilApiTools.Port_Basics maPort = new XilApiTools.Port_Basics();
+        //public Port_Basics myport; // MAPort to talk to hardware
+        public Worker(HubConnection hubConnection, IHubProxy hubProxy, XilApiTools.Port_Basics maPort)
         {
-            this.connection = connection;
-            this.proxy = proxy;
-            this.record = record;
+            this.hubConnection = hubConnection;
+            this.hubProxy = hubProxy;
+            this.record = new Server();
+            this.maPort = maPort;
         }
-        public void DoWork()
+        public async Task DoWork()
         {
-            proxy.Invoke("createRecord");
-            Server record1 = new Server("Test1");
-            record1.ip = "1";
-            Server record2 = new Server("Test2");
-            record2.ip = "2";
-            while (connection.State== Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+            hubProxy.Invoke("createRecord").Wait();
+            while (hubConnection.State== Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
             {
                 try
                 {
                     // Check XIL connection
-                    // Read variables
+                    // Pass complete DOM structure to this method to access all elements?
+                    // string variableName = variable_listBox.SelectedItem.ToString();
                     // Update record
-                    record.ping = "1";
-                    // proxy.Invoke("UpdateTime", new string[] { "TIME1" });
-                    proxy.Invoke("UpdateRecord", record1);
+                    // string variableName = "ds1401()://currentTime";
+                    if (maPort.Connected())
+                    {
+                        record.ip = "CONNECTED";
+                        // record.data = maPort.Read(variableName).ToString();
+                    }
+                    else
+                    {
+                        record.ip = "NOT CONNECTED";
+                    }
+                    
+                    record.ping = "0";
+                    await hubProxy.Invoke("UpdateRecord", record);
                     Thread.Sleep(500);
-                    // proxy.Invoke("UpdateTime", new string[] { "TIME2" });
-                    proxy.Invoke("UpdateRecord", record2);
+                    record.ping = "1";
+                    await hubProxy.Invoke("UpdateRecord", record);
                     Thread.Sleep(500);
                 }
                 catch
@@ -173,82 +194,75 @@ namespace WpfApplicationClient
         public string identifier { get; set; }
         public string ip { get; set; }
         public string ping { get; set; }
-        public Server(string identifier)
-        {
-            this.identifier = identifier;
-        }
     }
     public partial class MainWindow : Window
     {
         // OK to have this "GLOBAL" ?
         // Why must proxy be STATIC ?
         // Why / how does IISExpress automatically startup when debugging this project (not related to SignalRChat in which server runs)
-        static HubConnection connection = new HubConnection("http://localhost:50387");
-        static IHubProxy proxy = connection.CreateHubProxy("chatHub");
+        static HubConnection hubConnection = new HubConnection("http://localhost:50387");
+        static IHubProxy hubProxy = hubConnection.CreateHubProxy("chatHub");
 
         static XilApiTools.Connection_Basics XilConnection = new XilApiTools.Connection_Basics();
-        static XilApiTools.Port_Basics PortConnection = new XilApiTools.Port_Basics();
-        static Server record = new Server("myIdentifier");
-        static Worker worker = new Worker(connection, proxy, record);
+        static XilApiTools.Port_Basics maPort = new XilApiTools.Port_Basics();
+        static Server record = new Server();
+        static Worker worker; // = new Worker(hubConnection, hubProxy, );
         
 
         public MainWindow()
         {
             InitializeComponent();
-            connection.StateChanged += new Action<StateChange>(OnMyEvent);
+            hubConnection.StateChanged += new Action<StateChange>(OnMyEvent);
             // Populate platform types
             // WHERE SHOULD I DO THIS?
             update_platform_listBox();
         }
-        private void OnMyEvent(StateChange obj)
+        private async void OnMyEvent(StateChange obj)
         {
             switch (obj.NewState)
             {
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Connected:
-                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connected"));
-                    Thread workerThread = new Thread(worker.DoWork);
-                    workerThread.Start();
+                    await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connected"));
+                    Worker worker = new Worker(hubConnection, hubProxy, maPort);
+                    // AWAIT VERSUS THREADING  ???
+                    await worker.DoWork();
+                    // workerThread.Start();
                     break;
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting:
-                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connecting"));
+                    await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connecting"));
                     break;
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected:
-                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Disconnected"));
+                    await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Disconnected"));
                     break;
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting:
-                    textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Reconnecting"));
+                    await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Reconnecting"));
                     break;
             }
         }
         async void Connect()
         {
-            // Rename to BUTTON function names
-            await connection.Start();
+            // Rename to XIL_connect or something function names
+            await hubConnection.Start();
         }
         void Disconnect()
         {
             // Rename to BUTTON function names
-            connection.Stop();
+            hubConnection.Stop();
         }
         private void connect_hub_button_Click(object sender, RoutedEventArgs e)
         {
-            // dataGrid.Items.Add("test");
             Connect();
         }
         private void disconnect_hub_button_Click(object sender, RoutedEventArgs e)
         {
             Disconnect();
         }
-        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
         private void Send_Click(object sender, RoutedEventArgs e)
         {
             string[] data = new string[] { "ServerName", "Message", "Value" };
             try
             {
-                proxy.Invoke("send", data);
+                hubProxy.Invoke("send", data);
             }
             catch (Exception)
             {
@@ -280,7 +294,7 @@ namespace WpfApplicationClient
         private void update_variable_listBox()
         {
             variable_listBox.Items.Clear();
-            foreach (string item in PortConnection.MAPort.VariableNames)
+            foreach (string item in maPort.MAPort.VariableNames)
                 {
                     variable_listBox.Items.Add(item);
                 }
@@ -290,12 +304,12 @@ namespace WpfApplicationClient
         {
             // string variableName = "ds1401()://currentTime";
             string variableName = variable_listBox.SelectedItem.ToString();
-            read_xil_variable_text.Text = PortConnection.Read(variableName).ToString();
+            read_xil_variable_text.Text = maPort.Read(variableName).ToString();
         }
         private void connect_maport_button_Click(object sender, RoutedEventArgs e)
         {
             {
-                status_message_text.Text = PortConnection.Initialise();
+                status_message_text.Text = maPort.Initialise();
                 update_variable_listBox();
             }
         }

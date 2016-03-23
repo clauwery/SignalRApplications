@@ -39,12 +39,13 @@ namespace SignalRChat
         {
             return Groups.Add(Context.ConnectionId, "xilServers");
         }
-        public void CreateRecord()
+        public string CreateRecord()
         {
             Clients.All.createRecord(Context.ConnectionId);
             // Clients.Group("xilServers").createRecord(Context.ConnectionId);
             // Clients.All.createRecord(Context.ConnectionId);
             // Clients.All.createRecord(record);
+            return Context.ConnectionId;
         }
         public void DeleteRecord()
         {
