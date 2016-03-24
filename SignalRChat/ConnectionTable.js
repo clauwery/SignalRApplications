@@ -25,7 +25,7 @@
                     // list: false
                 },
                 ip: {
-                    title: 'IP',
+                    title: 'MAPort',
                     width: '23%'
                 },
                 ping: {
@@ -33,7 +33,7 @@
                     width: '23%'
                 },
                 time: {
-                    title: 'time',
+                    title: 'MAPort DAQ time',
                     width: '23%'
                 }
             }

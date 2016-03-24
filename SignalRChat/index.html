@@ -73,6 +73,8 @@
                 });
             };
             */
+            // chat.client.createRecord = addRecord;
+            
             chat.client.createRecord = function (identifier) {
                 $('#TestTableContainer').jtable('addRecord', {
                     record: {
@@ -88,6 +90,12 @@
                 $('#TestTableContainer').jtable('deleteRecord', {
                     key: identifier,
                     clientOnly: true
+                });
+            };
+
+            chat.client.isRecord = function (identifier) {
+                $('#TestTableContainer').jtable('getRowByKey', {
+                    key: identifier
                 });
             };
             chat.client.updateRecord = function (identifier, record) {

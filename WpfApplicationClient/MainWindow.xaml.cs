@@ -211,6 +211,7 @@ namespace WpfApplicationClient
     }
     public partial class MainWindow : Window
     {
+        // Related to referenced ASAM assemblies
         static private string vendorName = "dSPACE GmbH";
         static private string productName = "XIL API";
         static private string productVersion = "2015-B";
@@ -222,14 +223,25 @@ namespace WpfApplicationClient
         static IHubProxy hubProxy = hubConnection.CreateHubProxy("chatHub");
         static XilApiTools.Connection_Basics XilConnection = new XilApiTools.Connection_Basics();
         static XilApiTools.MAPort maPort = new XilApiTools.MAPort(vendorName, productName, productVersion);
-
         public MainWindow()
         {
-            InitializeComponent();
             hubConnection.StateChanged += new Action<StateChange>(hubConnectionStateChangedEvent);
-            // Populate platform types
-            // WHERE SHOULD I DO THIS?
-            update_platform_listBox();
+            InitializeComponent();
+            GetWindow(this).Closing += MainWindow_Closing;
+            try
+            {
+                hubConnection.Start();
+            }
+            catch (Exception ex)
+            {
+
+                status_message_text.Text = ex.Message;
+            }
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Shutdown();
         }
         private async void hubConnectionStateChangedEvent(StateChange obj)
         {
@@ -255,7 +267,15 @@ namespace WpfApplicationClient
         }
         private async void connect_hub_button_Click(object sender, RoutedEventArgs e)
         {
-            await hubConnection.Start();
+            try
+            {
+                await hubConnection.Start();
+            }
+            catch (Exception ex)
+            {
+
+                status_message_text.Text = ex.Message;
+            }
         }
         private void disconnect_hub_button_Click(object sender, RoutedEventArgs e)
         {
@@ -329,10 +349,15 @@ namespace WpfApplicationClient
         }
         private void exit_button_Click(object sender, RoutedEventArgs e)
         {
+            Shutdown();
+            GetWindow(this).Close();
+        }
+        private void Shutdown()
+        {
+            // Gracefully shutdown
             maPort.Disconnect();
             hubConnection.Stop();
             hubConnection.Dispose();
-            GetWindow(this).Close();
         }
     }
 }
