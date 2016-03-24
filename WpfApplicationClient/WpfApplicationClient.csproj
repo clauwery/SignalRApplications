@@ -52,53 +52,53 @@
   <ItemGroup>
     <Reference Include="ASAM.XIL.Implementation.Framework, Version=2.0.1.0, Culture=neutral, PublicKeyToken=223668b9b1d3f17b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Implementation.Framework.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Implementation.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ASAM.XIL.Implementation.FrameworkFactory, Version=2.0.1.0, Culture=neutral, PublicKeyToken=d64b0277da8a2c74, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Implementation.FrameworkFactory.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Implementation.FrameworkFactory.dll</HintPath>
     </Reference>
     <Reference Include="ASAM.XIL.Implementation.ManifestReader, Version=2.0.1.0, Culture=neutral, PublicKeyToken=8389d4d3a9402de1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Implementation.ManifestReader.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Implementation.ManifestReader.dll</HintPath>
     </Reference>
     <Reference Include="ASAM.XIL.Implementation.Testbench, Version=2.0.1.0, Culture=neutral, PublicKeyToken=a258c402a414cddb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Implementation.Testbench.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Implementation.Testbench.dll</HintPath>
     </Reference>
     <Reference Include="ASAM.XIL.Implementation.TestbenchFactory, Version=2.0.1.0, Culture=neutral, PublicKeyToken=fc9d65855b27d387, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Implementation.TestbenchFactory.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Implementation.TestbenchFactory.dll</HintPath>
     </Reference>
     <Reference Include="ASAM.XIL.Implementation.XILSupportLibrary, Version=2.0.1.0, Culture=neutral, PublicKeyToken=eb08b67b2f57b9b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Implementation.XILSupportLibrary.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Implementation.XILSupportLibrary.dll</HintPath>
     </Reference>
     <Reference Include="ASAM.XIL.Interfaces, Version=2.0.1.0, Culture=neutral, PublicKeyToken=bf471dff114ae984, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ASAM e.V\ASAM AE XIL API Standard Assemblies 2.0.1\bin\ASAM.XIL.Interfaces.dll</HintPath>
+      <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="AutomationDevicesInterfaces11">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\AutomationDevicesInterfaces11.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\AutomationDevicesInterfaces11.dll</HintPath>
     </Reference>
     <Reference Include="CmnDSAutomationBaseInterfaces7">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\CmnDSAutomationBaseInterfaces7.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\CmnDSAutomationBaseInterfaces7.dll</HintPath>
     </Reference>
     <Reference Include="CmnDSGlobalTypes">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\CmnDSGlobalTypes.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\CmnDSGlobalTypes.dll</HintPath>
     </Reference>
     <Reference Include="ControlDeskNGAutomationInterfaceDefinitions11">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\ControlDeskNGAutomationInterfaceDefinitions11.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\ControlDeskNGAutomationInterfaceDefinitions11.dll</HintPath>
     </Reference>
     <Reference Include="dSPACE.InterfaceDefinitions.PlatformManagement.Automation11">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\dSPACE.InterfaceDefinitions.PlatformManagement.Automation11.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.InterfaceDefinitions.PlatformManagement.Automation11.dll</HintPath>
     </Reference>
     <Reference Include="dSPACE.PythonIDE.Automation2">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\dSPACE.PythonIDE.Automation2.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.PythonIDE.Automation2.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="FailureSimulationInterfaces5">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\FailureSimulationInterfaces5.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\FailureSimulationInterfaces5.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
@@ -120,10 +120,10 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="VariablesManagementAutomationInterfaces4">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\VariablesManagementAutomationInterfaces4.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\VariablesManagementAutomationInterfaces4.dll</HintPath>
     </Reference>
     <Reference Include="VisualizationAutomationLibrary10">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\dSPACE ControlDesk 5.5\Main\bin\AutomationAssemblies\VisualizationAutomationLibrary10.dll</HintPath>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\VisualizationAutomationLibrary10.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
