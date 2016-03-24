@@ -12,7 +12,9 @@ namespace SignalRChat
         public void Send(string name, string message, string value)
         {
             // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(name, message, value);
+            var serverVars = Context.Request.GetHttpContext().Request.ServerVariables;
+            string Ip = serverVars["REMOTE_ADDR"];
+            Clients.All.broadcastMessage(name, Ip, value);
         }
         public void UpdateTime(string time)
         {
@@ -21,8 +23,6 @@ namespace SignalRChat
         }
         public override Task OnConnected()
         {
-            //Clients.All.onConnected(Context.ConnectionId);
-            // Clients.All.createRecord(Context.ConnectionId);
             return base.OnConnected();
         }
         public override Task OnDisconnected(bool stopCalled)

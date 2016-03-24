@@ -31,8 +31,12 @@
                 ping: {
                     title: 'PING',
                     width: '23%'
-        }
-    }
+                },
+                time: {
+                    title: 'time',
+                    width: '23%'
+                }
+            }
         });
 
         // Populate table
