@@ -30,18 +30,29 @@ using ASAM.XIL.Interfaces.Testbench.Common.ValueContainer.Enum;
 
 namespace XilApiTools
 {
-    class Connection_Basics
+    class PlatformManagement
     {
-        static Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
-        public IPmPlatformManagement PlatformManagement = Activator.CreateInstance(serverType) as IPmPlatformManagement;
+        private IPmPlatformManagement platformManagement;
+        public void CreatePlatformManagement()
+        {
+            try
+            {
+                Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
+                platformManagement = Activator.CreateInstance(serverType) as IPmPlatformManagement;
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
         public string RegisterPlatform(string platformName)
         {
             string Message = "";
             try
             {
                 PlatformType platformType = (PlatformType)Enum.Parse(typeof(PlatformType), platformName);
-                var RegisterInfo = PlatformManagement.CreatePlatformRegistrationInfo(platformType);
-                PlatformManagement.RegisterPlatform(RegisterInfo);
+                object RegisterInfo = platformManagement.CreatePlatformRegistrationInfo(platformType);
+                platformManagement.RegisterPlatform(RegisterInfo);
             }
             catch(Exception ex)
             {
@@ -54,13 +65,17 @@ namespace XilApiTools
             string Message = "";
             try
             {
-                PlatformManagement.ClearSystem(true);
+                platformManagement.ClearSystem(true);
             }
             catch(System.Exception ex)
             {
                 Message = ex.Message;
             }
             return Message;
+        }
+        public IPmSeekedPlatforms Platforms()
+        {
+            return platformManagement.Platforms;
         }
     }
     public class MAPort
@@ -169,7 +184,7 @@ namespace WpfApplicationClient
                     // string variableName = variable_listBox.SelectedItem.ToString();
                     // Update record
                     // string variableName = "ds1401()://currentTime";
-                    if (maPort.IsRunning())
+                    if (maPort!=null && maPort.IsRunning())
                     {
                         record.ip = "CONNECTED";
                         // record.time = maPort.Read("ds1401()://currentTime").ToString();
@@ -221,10 +236,19 @@ namespace WpfApplicationClient
         // Why / how does IISExpress automatically startup when debugging this project (not related to SignalRChat in which server runs)
         static HubConnection hubConnection = new HubConnection("http://localhost:50387");
         static IHubProxy hubProxy = hubConnection.CreateHubProxy("chatHub");
-        static XilApiTools.Connection_Basics XilConnection = new XilApiTools.Connection_Basics();
-        static XilApiTools.MAPort maPort = new XilApiTools.MAPort(vendorName, productName, productVersion);
+        private XilApiTools.PlatformManagement platformManagement;
+        private XilApiTools.MAPort maPort;
         public MainWindow()
         {
+            try
+            {
+                platformManagement = new XilApiTools.PlatformManagement();
+                maPort = new XilApiTools.MAPort(vendorName, productName, productVersion);
+            }
+            catch
+            {
+                // Disable XIL API and MAPort buttons and functionality
+            }
             hubConnection.StateChanged += new Action<StateChange>(hubConnectionStateChangedEvent);
             InitializeComponent();
             GetWindow(this).Closing += MainWindow_Closing;
@@ -234,7 +258,6 @@ namespace WpfApplicationClient
             }
             catch (Exception ex)
             {
-
                 status_message_text.Text = ex.Message;
             }
         }
@@ -297,19 +320,19 @@ namespace WpfApplicationClient
         {
             // string platformName = comboBox.SelectedItem.ToString();
             string platformName = "MABX";
-            status_message_text.Text = XilConnection.RegisterPlatform(platformName);
+            status_message_text.Text = platformManagement.RegisterPlatform(platformName);
             update_platform_listBox();
         }
         private void clear_xil_button_Click(object sender, RoutedEventArgs e)
         {
-            status_message_text.Text = XilConnection.Clear();
+            status_message_text.Text = platformManagement.Clear();
             update_platform_listBox();
         }
         private void update_platform_listBox()
         {
             platform_listBox.Items.Clear();
             // Auto get type of platform !!! not always MABX
-            foreach (IPmMABXPlatform item in (IPmSeekedPlatforms)XilConnection.PlatformManagement.Platforms)
+            foreach (IPmMABXPlatform item in (IPmSeekedPlatforms)platformManagement.Platforms())
             {
                 platform_listBox.Items.Add(item.DisplayName);
             }
