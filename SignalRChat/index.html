@@ -27,6 +27,8 @@
 </head>
 <body>
     <div id="TestTableContainer"></div>
+    <script type="text/javascript"> var container = '#TestTableContainer';</script>
+
     <div class="container">
 <!--    <input type="text" id="message" /> -->
 <!--    <input type="button" id="sendmessage" value="Send" /> -->
@@ -44,29 +46,19 @@
 
     <!--Add script to update the page and send messages.-->
     <script type="text/javascript">
+        // (function(){}) is a self invoking anonymous function defining a "closure" i.e. a private scope
         $(function () {
             // Declare a proxy to reference the hub.
             var chat = $.connection.chatHub;
             // Create a function that the hub can call to broadcast messages.
-            chat.client.broadcastMessage = function (name, message, value) {
-                // Html encode display name and message.
-                var encodedName = $('<div />').text(name).html();
-                var encodedMsg = $('<div />').text(message).html();
-                // Overwrite message
-                $('#response').text(name + ': ' + message + ' = ' + value);
-                // Add the message to the page.
-                // $('#discussion').append('<li><strong>' + encodedName
-                  //  + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
-            };
+            chat.client.broadcastMessage = BroadcastMessage;
             chat.client.onConnected = function (connectionId) {
                 $('#response').text(connectionId);
             };
 
-
             // Defined in RecordTableFunction.js
             chat.client.createRecord = AddRecord
             chat.client.deleteRecord = DeleteRecord
-            chat.client.isRecord = IsRecord
             chat.client.updateRecord = UpdateRecord
 
             // Get the user name and store it to prepend to messages.
