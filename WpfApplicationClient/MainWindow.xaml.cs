@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -14,6 +15,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.AspNet.SignalR.Client;
 using System.Threading;
+
+
+using Microsoft.Research.DynamicDataDisplay;
+using Microsoft.Research.DynamicDataDisplay.DataSources;
 
 using ASAM.XIL.Interfaces.Testbench;
 using ASAM.XIL.Interfaces.Testbench.Common.Error;
@@ -159,64 +164,6 @@ namespace XilApiTools
 
 namespace WpfApplicationClient
 {
-    public class Worker
-    {
-        private IConnection hubConnection; // connection to HUB
-        private IHubProxy hubProxy; // proxy to talk to HUB
-        private Server record; // Record to build table
-        private XilApiTools.MAPort maPort; // MAPort to talk to hardware
-        public Worker(HubConnection hubConnection, IHubProxy hubProxy, XilApiTools.MAPort maPort)
-        {
-            this.hubConnection = hubConnection;
-            this.hubProxy = hubProxy;
-            this.maPort = maPort;
-            this.record = new Server();
-        }
-        public async Task DoWork()
-        {
-            hubProxy.Invoke("createRecord").Wait();
-            while (hubConnection.State== Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
-            {
-                try
-                {
-                    // Check XIL connection
-                    // Pass complete DOM structure to this method to access all elements?
-                    // string variableName = variable_listBox.SelectedItem.ToString();
-                    // Update record
-                    // string variableName = "ds1401()://currentTime";
-                    if (maPort!=null && maPort.IsRunning())
-                    {
-                        record.ip = "CONNECTED";
-                        // record.time = maPort.Read("ds1401()://currentTime").ToString();
-                        record.time = maPort.DAQClock().ToString();
-                    }
-                    else
-                    {
-                        record.ip = "NOT CONNECTED";
-                        record.time = "";
-                    }
-
-                    record.ping = "0";
-                    await hubProxy.Invoke("UpdateRecord", record);
-                    Thread.Sleep(500);
-                    record.ping = "1";
-                    await hubProxy.Invoke("UpdateRecord", record);
-                    Thread.Sleep(500);
-                }
-                catch
-                {
-                    // Client disconnected but still in while loop
-                }
-            }
-        }
-        public void RequestStop()
-        {
-            _shouldStop = true;
-        }
-        // Volatile is used as hint to the compiler that this data 
-        // member will be accessed by multiple threads. 
-        private volatile bool _shouldStop;
-    }
     public class Server
     {
         public string identifier { get; set; }
@@ -226,6 +173,9 @@ namespace WpfApplicationClient
     }
     public partial class MainWindow : Window
     {
+        // Dynamic data point
+        ObservableDataSource<Point> source1 = null;
+
         // Related to referenced ASAM assemblies
         static private string vendorName = "dSPACE GmbH";
         static private string productName = "XIL API";
@@ -251,6 +201,13 @@ namespace WpfApplicationClient
             }
             hubConnection.StateChanged += new Action<StateChange>(hubConnectionStateChangedEvent);
             InitializeComponent();
+
+            // D3 DEMO
+            // ObservableDataSource<Point> source1 = null;
+            source1 = new ObservableDataSource<Point>();
+            source1.SetXYMapping(p => p);
+            plotter.AddLineGraph(source1); // x and y are IEnumerable<double> 
+
             GetWindow(this).Closing += MainWindow_Closing;
             try
             {
@@ -259,6 +216,53 @@ namespace WpfApplicationClient
             catch (Exception ex)
             {
                 status_message_text.Text = ex.Message;
+            }
+        }
+        public async Task DoWork()
+        {
+            Point point1 = new Point(0, 1);
+            double index = 0.0;
+            Server record = new Server();
+            hubProxy.Invoke("createRecord").Wait();
+            while (hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+            {
+                try
+                {
+                    // Check XIL connection
+                    // Pass complete DOM structure to this method to access all elements?
+                    // string variableName = variable_listBox.SelectedItem.ToString();
+                    // Update record
+                    // string variableName = "ds1401()://currentTime";
+                    if (maPort != null && maPort.IsRunning())
+                    {
+                        record.ip = "CONNECTED";
+                        // record.time = maPort.Read("ds1401()://currentTime").ToString();
+                        record.time = maPort.DAQClock().ToString();
+                    }
+                    else
+                    {
+                        record.ip = "NOT CONNECTED";
+                        record.time = "";
+                    }
+
+                    point1.X = index++;
+                    point1.Y = -point1.Y;
+                    source1.AppendAsync(Dispatcher, point1);
+
+                    record.ping = "0";
+                    await hubProxy.Invoke("UpdateRecord", record);
+                    Thread.Sleep(500);
+
+                    record.ping = "1";
+                    await hubProxy.Invoke("UpdateRecord", record);
+                    Thread.Sleep(500);
+
+ 
+                }
+                catch
+                {
+                    // Client disconnected but still in while loop
+                }
             }
         }
 
@@ -272,9 +276,10 @@ namespace WpfApplicationClient
             {
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Connected:
                     await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connected"));
-                    Worker hubConnectionWorker = new Worker(hubConnection, hubProxy, maPort);
+                    // Worker hubConnectionWorker = new Worker(hubConnection, hubProxy, maPort, source1);
                     // AWAIT VERSUS THREADING  ???
-                    await hubConnectionWorker.DoWork();
+                    //await hubConnectionWorker.DoWork();
+                    await DoWork();
                     // workerThread.Start();
                     break;
                 case Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting:

@@ -97,6 +97,10 @@
       <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.PythonIDE.Automation2.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="DynamicDataDisplay, Version=0.3.0.1, Culture=neutral, PublicKeyToken=5b7d744a7263923f, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicDataDisplay.0.3.0.1\lib\net45\DynamicDataDisplay.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FailureSimulationInterfaces5">
       <HintPath>Assemblies\ControlDesk Automation Assemblies 11\FailureSimulationInterfaces5.dll</HintPath>
     </Reference>
