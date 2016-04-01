@@ -79,20 +79,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="AutomationDevicesInterfaces11">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\AutomationDevicesInterfaces11.dll</HintPath>
-    </Reference>
-    <Reference Include="CmnDSAutomationBaseInterfaces7">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\CmnDSAutomationBaseInterfaces7.dll</HintPath>
+    <Reference Include="AutomationDevicesInterfaces10">
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 10\AutomationDevicesInterfaces10.dll</HintPath>
     </Reference>
     <Reference Include="CmnDSGlobalTypes">
       <HintPath>Assemblies\ControlDesk Automation Assemblies 11\CmnDSGlobalTypes.dll</HintPath>
     </Reference>
-    <Reference Include="ControlDeskNGAutomationInterfaceDefinitions11">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\ControlDeskNGAutomationInterfaceDefinitions11.dll</HintPath>
-    </Reference>
-    <Reference Include="dSPACE.InterfaceDefinitions.PlatformManagement.Automation11">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.InterfaceDefinitions.PlatformManagement.Automation11.dll</HintPath>
+    <Reference Include="dSPACE.InterfaceDefinitions.PlatformManagement.Automation10">
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 10\dSPACE.InterfaceDefinitions.PlatformManagement.Automation10.dll</HintPath>
     </Reference>
     <Reference Include="dSPACE.PythonIDE.Automation2">
       <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.PythonIDE.Automation2.dll</HintPath>

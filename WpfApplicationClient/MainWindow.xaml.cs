@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace WpfApplicationClient
         // Related to referenced ASAM assemblies
         static private string vendorName = "dSPACE GmbH";
         static private string productName = "XIL API";
-        static private string productVersion = "2015-B";
+        static private string productVersion = "2015-A";
 
         // Create platform management
         static private Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
@@ -63,6 +64,18 @@ namespace WpfApplicationClient
         {
             PlatformType platformType = (PlatformType)Enum.Parse(typeof(PlatformType), platformName);
             object registrationInfo = platformManagement.CreatePlatformRegistrationInfo(platformType);
+            Type registrationInfoType = registrationInfo.GetType();
+            if (platformName=="MultiProcessor")
+            {
+                object registrationInfo1 = platformManagement.CreatePlatformRegistrationInfo(PlatformType.DS1006);
+                registrationInfoType.InvokeMember("RegisterInfos", BindingFlags.SetProperty, null, registrationInfo, new Object[] { registrationInfo1 });
+            }
+            if (platformName=="DS1006")
+            {
+                registrationInfoType.InvokeMember("PortAddress", BindingFlags.SetProperty, null, registrationInfo, new Object[] { 768 }); // 0x300
+                registrationInfoType.InvokeMember("ConnectionType", BindingFlags.SetProperty, null, registrationInfo, new Object[] { InterfaceConnectionType.Bus });
+            }
+            
             platformManagement.RegisterPlatform(registrationInfo);
         }
         public void RegisterPlatformEvents(IPmPlatformManagement platformManagement)
@@ -285,10 +298,13 @@ namespace WpfApplicationClient
         }
         private void register_xil_button_Click(object sender, RoutedEventArgs e)
         {
-            // string platformName = comboBox.SelectedItem.ToString();
-            string platformName = "MABX";
-            RegisterPlatform(platformManagement, platformName);
-            update_platform_listBox();
+            if (platform_comboBox.SelectedItem!=null)
+            {
+                string platformName = platform_comboBox.SelectedItem.ToString();
+                RegisterPlatform(platformManagement, platformName);
+                update_platform_listBox();
+            }
+            
         }
         private void clear_xil_button_Click(object sender, RoutedEventArgs e)
         {
