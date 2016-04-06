@@ -1,4 +1,7 @@
-﻿using System;
+﻿extern alias AutomationDevicesInterfaces10;
+extern alias dSPACEInterfaceDefinitionsPlatformManagementAutomation10;
+
+using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -20,7 +23,8 @@ using ASAM.XIL.Implementation.TestbenchFactory.Testbench;
 using ASAM.XIL.Interfaces.Testbench.MAPort.Enum;
 using ASAM.XIL.Interfaces.Testbench.MAPort;
 
-using dSPACE.PlatformManagement.Automation;
+using AutomationDevicesInterfaces10.dSPACE.PlatformManagement.Automation;
+using dSPACEInterfaceDefinitionsPlatformManagementAutomation10.dSPACE.PlatformManagement.Automation;
 
 namespace WpfApplicationClient
 {
@@ -40,7 +44,7 @@ namespace WpfApplicationClient
         // Dynamic data point
         ObservableDataSource<Point> source1 = null;
 
-        // Related to referenced ASAM assemblies
+        // Related to referenced XIL API ASAM assemblies
         static private string vendorName = "dSPACE GmbH";
         static private string productName = "XIL API";
         static private string productVersion = "2015-A";
@@ -58,25 +62,28 @@ namespace WpfApplicationClient
         static HubConnection hubConnection = new HubConnection("http://localhost:50387");
         static IHubProxy hubProxy = hubConnection.CreateHubProxy("chatHub");
 
-
         // PlatformManagement functions
         public void RegisterPlatform(IPmPlatformManagement platformManagement, string platformName)
         {
             PlatformType platformType = (PlatformType)Enum.Parse(typeof(PlatformType), platformName);
-            object registrationInfo = platformManagement.CreatePlatformRegistrationInfo(platformType);
-            Type registrationInfoType = registrationInfo.GetType();
-            if (platformName=="MultiProcessor")
+            if (platformName == "DS1103")
             {
-                object registrationInfo1 = platformManagement.CreatePlatformRegistrationInfo(PlatformType.DS1006);
-                registrationInfoType.InvokeMember("RegisterInfos", BindingFlags.SetProperty, null, registrationInfo, new Object[] { registrationInfo1 });
+                IPmDS1103RegisterInfo registrationInfo = (IPmDS1103RegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
+                platformManagement.RegisterPlatform(registrationInfo);
             }
             if (platformName=="DS1006")
             {
-                registrationInfoType.InvokeMember("PortAddress", BindingFlags.SetProperty, null, registrationInfo, new Object[] { 768 }); // 0x300
-                registrationInfoType.InvokeMember("ConnectionType", BindingFlags.SetProperty, null, registrationInfo, new Object[] { InterfaceConnectionType.Bus });
+                // platformManagement.ClearSystem(false);
+                IPmDS1006RegisterInfo registrationInfo = (IPmDS1006RegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
+                registrationInfo.ConnectionType = InterfaceConnectionType.Bus;
+                registrationInfo.PortAddress = 768;
+                platformManagement.RegisterPlatform(registrationInfo);
             }
-            
-            platformManagement.RegisterPlatform(registrationInfo);
+            if (platformName=="MABX")
+            {
+                IPmMABXRegisterInfo registrationInfo = (IPmMABXRegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
+                platformManagement.RegisterPlatform(registrationInfo);
+            }
         }
         public void RegisterPlatformEvents(IPmPlatformManagement platformManagement)
         {
@@ -322,12 +329,10 @@ namespace WpfApplicationClient
         }
         private void connect_maport_button_Click(object sender, RoutedEventArgs e)
         {
-            {
-                string MAPortConfigFile = @"MAPortConfig.xml";
-                IMAPortConfig maPortConfig = maPort.LoadConfiguration(MAPortConfigFile);
-                maPort.Configure(maPortConfig, false);
-                update_variable_listBox();
-            }
+            string MAPortConfigFile = @"MAPortConfig.xml";
+            IMAPortConfig maPortConfig = maPort.LoadConfiguration(MAPortConfigFile);
+            maPort.Configure(maPortConfig, false);
+            update_variable_listBox();
         }
         private void disconnect_maport_button_Click(object sender, RoutedEventArgs e)
         {

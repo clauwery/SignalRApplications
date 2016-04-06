@@ -79,25 +79,36 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Assemblies\ASAM AE XIL API Standard Assemblies 2.0.1\ASAM.XIL.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="AutomationDevicesInterfaces10">
+    <Reference Include="AutomationDevicesInterfaces10, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f9604847d8afbfbb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Assemblies\ControlDesk Automation Assemblies 10\AutomationDevicesInterfaces10.dll</HintPath>
+      <Aliases>AutomationDevicesInterfaces10</Aliases>
     </Reference>
-    <Reference Include="CmnDSGlobalTypes">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\CmnDSGlobalTypes.dll</HintPath>
+    <Reference Include="AutomationDevicesInterfaces11">
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\AutomationDevicesInterfaces11.dll</HintPath>
+      <Aliases>AutomationDevicesInterfaces11</Aliases>
     </Reference>
-    <Reference Include="dSPACE.InterfaceDefinitions.PlatformManagement.Automation10">
+    <Reference Include="ControlDeskNGAutomationInterfaceDefinitions10, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f9604847d8afbfbb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 10\ControlDeskNGAutomationInterfaceDefinitions10.dll</HintPath>
+      <Aliases>ControlDeskNGAutomationInterfaceDefinitions10</Aliases>
+    </Reference>
+    <Reference Include="ControlDeskNGAutomationInterfaceDefinitions11">
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\ControlDeskNGAutomationInterfaceDefinitions11.dll</HintPath>
+      <Aliases>ControlDeskNGAutomationInterfaceDefinitions11</Aliases>
+    </Reference>
+    <Reference Include="dSPACE.InterfaceDefinitions.PlatformManagement.Automation10, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f9604847d8afbfbb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Assemblies\ControlDesk Automation Assemblies 10\dSPACE.InterfaceDefinitions.PlatformManagement.Automation10.dll</HintPath>
+      <Aliases>dSPACEInterfaceDefinitionsPlatformManagementAutomation10</Aliases>
     </Reference>
-    <Reference Include="dSPACE.PythonIDE.Automation2">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.PythonIDE.Automation2.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+    <Reference Include="dSPACE.InterfaceDefinitions.PlatformManagement.Automation11">
+      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\dSPACE.InterfaceDefinitions.PlatformManagement.Automation11.dll</HintPath>
+      <Aliases>dSPACEInterfaceDefinitionsPlatformManagementAutomation11</Aliases>
     </Reference>
     <Reference Include="DynamicDataDisplay, Version=0.3.0.1, Culture=neutral, PublicKeyToken=5b7d744a7263923f, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicDataDisplay.0.3.0.1\lib\net45\DynamicDataDisplay.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="FailureSimulationInterfaces5">
-      <HintPath>Assemblies\ControlDesk Automation Assemblies 11\FailureSimulationInterfaces5.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
