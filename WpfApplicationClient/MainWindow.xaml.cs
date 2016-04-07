@@ -1,5 +1,7 @@
 ﻿extern alias AutomationDevicesInterfaces10;
 extern alias dSPACEInterfaceDefinitionsPlatformManagementAutomation10;
+extern alias AutomationDevicesInterfaces11;
+extern alias dSPACEInterfaceDefinitionsPlatformManagementAutomation11;
 
 using System;
 using System.Reflection;
@@ -23,8 +25,8 @@ using ASAM.XIL.Implementation.TestbenchFactory.Testbench;
 using ASAM.XIL.Interfaces.Testbench.MAPort.Enum;
 using ASAM.XIL.Interfaces.Testbench.MAPort;
 
-using AutomationDevicesInterfaces10.dSPACE.PlatformManagement.Automation;
-using dSPACEInterfaceDefinitionsPlatformManagementAutomation10.dSPACE.PlatformManagement.Automation;
+// using AutomationDevicesInterfaces10.dSPACE.PlatformManagement.Automation;
+using dSPACEInterfaceDefinitionsPlatformManagementAutomation11.dSPACE.PlatformManagement.Automation;
 
 namespace WpfApplicationClient
 {
@@ -47,7 +49,7 @@ namespace WpfApplicationClient
         // Related to referenced XIL API ASAM assemblies
         static private string vendorName = "dSPACE GmbH";
         static private string productName = "XIL API";
-        static private string productVersion = "2015-A";
+        static private string productVersion = "2015-B";
 
         // Create platform management
         static private Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
@@ -69,7 +71,7 @@ namespace WpfApplicationClient
             if (platformName == "DS1103")
             {
                 IPmDS1103RegisterInfo registrationInfo = (IPmDS1103RegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
-                platformManagement.RegisterPlatform(registrationInfo);
+                platformManagement.RegisterPlatform(registrationInfo);                
             }
             if (platformName=="DS1006")
             {
@@ -95,7 +97,22 @@ namespace WpfApplicationClient
             platformManagementEvents.RealTimeApplicationStarted += PlatformManagementEvents_RealTimeApplicationStarted;
             platformManagementEvents.RealTimeApplicationStopped += PlatformManagementEvents_RealTimeApplicationStopped;
         }
-
+        public string ActiveVariableDescription(IPmPlatformManagement platformManagement)
+        {
+            string activeVariableDescription = "";
+            Type platformType = platformManagement.Platforms.Item(0).GetType();
+            if (platformType==typeof(IPmDS1103Platform))
+            {
+                IPmDS1103Platform platform = (IPmDS1103Platform)platformManagement.Platforms.Item(0);
+                activeVariableDescription = platform.ActiveVariableDescription.ToString();
+            }
+            if (platformType==typeof(IPmMABXPlatform))
+            {
+                IPmMABXPlatform platform = (IPmMABXPlatform)platformManagement.Platforms.Item(0);
+                activeVariableDescription = platform.ActiveVariableDescription.ToString();
+            }
+            return activeVariableDescription;
+        }
         // Mainwindow
         public MainWindow()
         {
@@ -142,6 +159,7 @@ namespace WpfApplicationClient
         private void PlatformManagementEvents_PlatformConnected(object Platform)
         {
             update_platform_listBox();
+            string activeVariableDescription = ActiveVariableDescription(platformManagement);
         }
         private void PlatformManagementEvents_PlatformDisconnected(object Platform)
         {
@@ -213,6 +231,11 @@ namespace WpfApplicationClient
                 platform_comboBox.Items.Add(item);
             }
         }
+        private void update_variableDescription_listBox()
+        {
+            variableDescription_listBox.Dispatcher.Invoke(new Action(() => variableDescription_listBox.Items.Clear()));
+            // TO BE COMPLETED
+        }
 
         // Shutdown
         private void Shutdown()
@@ -238,11 +261,9 @@ namespace WpfApplicationClient
                     // Pass complete DOM structure to this method to access all elements?
                     // string variableName = variable_listBox.SelectedItem.ToString();
                     // Update record
-                    // string variableName = "ds1401()://currentTime";
                     if (maPort.State == MAPortState.eSIMULATION_RUNNING)
                     {
                         record.ip = "CONNECTED";
-                        // record.time = maPort.Read("ds1401()://currentTime").ToString();
                         record.time = maPort.DAQClock.ToString();
                     }
                     else
@@ -305,23 +326,45 @@ namespace WpfApplicationClient
         }
         private void register_xil_button_Click(object sender, RoutedEventArgs e)
         {
-            if (platform_comboBox.SelectedItem!=null)
+            if (platform_comboBox.SelectedItem != null)
             {
                 string platformName = platform_comboBox.SelectedItem.ToString();
-                RegisterPlatform(platformManagement, platformName);
+                try
+                {
+                    RegisterPlatform(platformManagement, platformName);
+                }
+                catch (Exception ex)
+                {
+                    status_message_text.Text = ex.Message;
+                }
                 update_platform_listBox();
+                try
+                {
+                    string activeVariableDescription = ActiveVariableDescription(platformManagement);
+                    status_message_text.Text = activeVariableDescription;
+                }
+                catch (Exception ex)
+                {
+                    status_message_text.Text = ex.Message;
+                }
             }
             
         }
         private void clear_xil_button_Click(object sender, RoutedEventArgs e)
         {
-            platformManagement.ClearSystem(true);
+            try
+            {
+                platformManagement.ClearSystem(true);
+            }
+            catch (Exception ex)
+            {
+                status_message_text.Text = ex.Message;
+            }
         }
         private void read_xil_variable_button_Click(object sender, RoutedEventArgs e)
         {
             if (maPort.State==MAPortState.eSIMULATION_RUNNING & variable_listBox.SelectedItem!=null)
             {
-                // string variableName = "ds1401()://currentTime";
                 string variableName = variable_listBox.SelectedItem.ToString();
                 IFloatValue value = (IFloatValue)maPort.Read(variableName);
                 read_xil_variable_text.Text = value.Value.ToString();
@@ -329,15 +372,60 @@ namespace WpfApplicationClient
         }
         private void connect_maport_button_Click(object sender, RoutedEventArgs e)
         {
-            string MAPortConfigFile = @"MAPortConfig.xml";
-            IMAPortConfig maPortConfig = maPort.LoadConfiguration(MAPortConfigFile);
-            maPort.Configure(maPortConfig, false);
+            string MAPortConfigFile;
+            bool forceConfig = false;
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".xml";
+            dlg.Filter = "XML Files (*.xml)|*.xml";
+            // Display OpenFileDialog by calling ShowDialog method 
+            bool? result = dlg.ShowDialog();
+            // Get the selected file name and display in a TextBox
+            if (result == false) { return; }
+
+            string sMessageBoxText = "Do you want to reload the variable description file?";
+            string sCaption = "MAPort configuration";
+
+            // Reload application?
+            MessageBoxButton btnMessageBox = MessageBoxButton.YesNoCancel;
+            MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
+            MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+            switch (rsltMessageBox)
+            {
+                case MessageBoxResult.Yes:
+                    forceConfig = true;
+                    break;
+                case MessageBoxResult.No:
+                    forceConfig = false;
+                    break;
+                case MessageBoxResult.Cancel:
+                    return;
+            }
+            MAPortConfigFile = dlg.FileName;
+            try
+            {
+                IMAPortConfig maPortConfig = maPort.LoadConfiguration(MAPortConfigFile);
+                maPort.Configure(maPortConfig, forceConfig);
+                maPort.StartSimulation();
+            }
+            catch (Exception ex)
+            {
+                status_message_text.Text = ex.Message;
+            }
             update_variable_listBox();
         }
         private void disconnect_maport_button_Click(object sender, RoutedEventArgs e)
         {
             {
-                maPort.Disconnect();
+                try
+                {
+                    maPort.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    status_message_text.Text = ex.Message;
+                }
                 update_variable_listBox();
             }
         }

@@ -21,10 +21,11 @@
         <TextBlock x:Name="status_message_text" HorizontalAlignment="Left" Margin="24,353,0,0" TextWrapping="Wrap" Text="Message log" VerticalAlignment="Top" Width="303" FontSize="9.333" Height="38"/>
         <ComboBox x:Name="platform_comboBox" HorizontalAlignment="Left" Margin="624,134,0,0" VerticalAlignment="Top" Width="122" Height="40" FontSize="9.333"></ComboBox>
         <Button x:Name="connect_maport_button" Content="Connect MAPort" HorizontalAlignment="Left" Margin="37,64,0,0" VerticalAlignment="Top" Width="99" Click="connect_maport_button_Click" FontSize="9.333"/>
-        <ListBox x:Name="platform_listBox" HorizontalAlignment="Left" Height="47" Margin="624,64,0,0" VerticalAlignment="Top" Width="182" FontSize="9.333"/>
+        <ListBox x:Name="platform_listBox" HorizontalAlignment="Left" Height="47" Margin="566,37,0,0" VerticalAlignment="Top" Width="271" FontSize="9.333"/>
         <ListBox x:Name="variable_listBox" HorizontalAlignment="Left" Height="206" Margin="24,134,0,0" VerticalAlignment="Top" Width="477" FontSize="9.333"/>
         <Button x:Name="disconnect_maport_button" Content="Disconnect MAPort" HorizontalAlignment="Left" Margin="161,64,0,0" VerticalAlignment="Top" Width="99" FontSize="9.333" Click="disconnect_maport_button_Click"/>
         <Button x:Name="exit_button" Content="Exit" HorizontalAlignment="Left" Margin="430,82,0,0" VerticalAlignment="Top" Width="75" Click="exit_button_Click"/>
         <d3:ChartPlotter x:Name="plotter" Margin="513,202,24.6,23.4"/>
+        <ListBox x:Name="variableDescription_listBox" HorizontalAlignment="Left" Height="47" Margin="566,87,0,0" VerticalAlignment="Top" Width="271" FontSize="9.333"/>
     </Grid>
 </Window>
