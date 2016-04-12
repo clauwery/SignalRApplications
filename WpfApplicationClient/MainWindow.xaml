@@ -13,19 +13,13 @@
         <Button x:Name="disconnect_hub_button" Content="Disconnect HUB" HorizontalAlignment="Left" Margin="161,10,0,0" VerticalAlignment="Top" Width="99" Click="disconnect_hub_button_Click" Height="20" FontSize="9.333"/>
         <Button x:Name="Send" Content="Send IP to HUB" HorizontalAlignment="Left" Margin="370,12,0,0" VerticalAlignment="Top" Width="75" Click="Send_Click" FontSize="9.333"/>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="281,10,0,0" TextWrapping="Wrap" Text="Disconnected" VerticalAlignment="Top" Height="30" Width="89" FontSize="9.333" TextAlignment="Center"/>
-        <Button x:Name="register_xil_button" Content="Register XIL" HorizontalAlignment="Left" Margin="37,37,0,0" VerticalAlignment="Top" Width="99" Click="register_xil_button_Click" FontSize="9.333"/>
-        <TextBlock x:Name="platforms" HorizontalAlignment="Left" Margin="24,396,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="260" Height="59" FontSize="9.333"/>
-        <Button x:Name="clear_xil_button" Content="Clear XIL" HorizontalAlignment="Left" Margin="161,37,0,0" VerticalAlignment="Top" Width="99" Click="clear_xil_button_Click" FontSize="9.333"/>
         <Button x:Name="read_xil_variable_button" Content="Read XIL variable" HorizontalAlignment="Left" Margin="37,93,0,0" VerticalAlignment="Top" Width="99" Click="read_xil_variable_button_Click" FontSize="9.333"/>
         <TextBlock x:Name="read_xil_variable_text" HorizontalAlignment="Left" Margin="161,93,0,0" TextWrapping="Wrap" Text="0.0" VerticalAlignment="Top" Width="99" FontSize="13.333" Height="18" TextAlignment="Center"/>
         <TextBlock x:Name="status_message_text" HorizontalAlignment="Left" Margin="24,353,0,0" TextWrapping="Wrap" Text="Message log" VerticalAlignment="Top" Width="303" FontSize="9.333" Height="38"/>
-        <ComboBox x:Name="platform_comboBox" HorizontalAlignment="Left" Margin="624,134,0,0" VerticalAlignment="Top" Width="122" Height="40" FontSize="9.333"></ComboBox>
         <Button x:Name="connect_maport_button" Content="Connect MAPort" HorizontalAlignment="Left" Margin="37,64,0,0" VerticalAlignment="Top" Width="99" Click="connect_maport_button_Click" FontSize="9.333"/>
-        <ListBox x:Name="platform_listBox" HorizontalAlignment="Left" Height="47" Margin="566,37,0,0" VerticalAlignment="Top" Width="271" FontSize="9.333"/>
         <ListBox x:Name="variable_listBox" HorizontalAlignment="Left" Height="206" Margin="24,134,0,0" VerticalAlignment="Top" Width="477" FontSize="9.333"/>
         <Button x:Name="disconnect_maport_button" Content="Disconnect MAPort" HorizontalAlignment="Left" Margin="161,64,0,0" VerticalAlignment="Top" Width="99" FontSize="9.333" Click="disconnect_maport_button_Click"/>
         <Button x:Name="exit_button" Content="Exit" HorizontalAlignment="Left" Margin="430,82,0,0" VerticalAlignment="Top" Width="75" Click="exit_button_Click"/>
         <d3:ChartPlotter x:Name="plotter" Margin="513,202,24.6,23.4"/>
-        <ListBox x:Name="variableDescription_listBox" HorizontalAlignment="Left" Height="47" Margin="566,87,0,0" VerticalAlignment="Top" Width="271" FontSize="9.333"/>
     </Grid>
 </Window>

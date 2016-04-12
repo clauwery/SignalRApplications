@@ -1,9 +1,4 @@
-﻿extern alias AutomationDevicesInterfaces10;
-extern alias dSPACEInterfaceDefinitionsPlatformManagementAutomation10;
-extern alias AutomationDevicesInterfaces11;
-extern alias dSPACEInterfaceDefinitionsPlatformManagementAutomation11;
-
-using System;
+﻿using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -24,9 +19,6 @@ using ASAM.XIL.Interfaces.Testbench.Common.ValueContainer;
 using ASAM.XIL.Implementation.TestbenchFactory.Testbench;
 using ASAM.XIL.Interfaces.Testbench.MAPort.Enum;
 using ASAM.XIL.Interfaces.Testbench.MAPort;
-
-// using AutomationDevicesInterfaces10.dSPACE.PlatformManagement.Automation;
-using dSPACEInterfaceDefinitionsPlatformManagementAutomation11.dSPACE.PlatformManagement.Automation;
 
 namespace WpfApplicationClient
 {
@@ -51,10 +43,6 @@ namespace WpfApplicationClient
         static private string productName = "XIL API";
         static private string productVersion = "2015-B";
 
-        // Create platform management
-        static private Type serverType = Type.GetTypeFromProgID("DSPlatformManagementAPI2");
-        static private IPmPlatformManagement platformManagement = Activator.CreateInstance(serverType) as IPmPlatformManagement;
-
         // Create MAPort
         static private ITestbenchFactory TBFactory = new TestbenchFactory();
         static private ITestbench TB = TBFactory.CreateVendorSpecificTestbench(vendorName, productName, productVersion);
@@ -64,70 +52,16 @@ namespace WpfApplicationClient
         static HubConnection hubConnection = new HubConnection("http://localhost:50387");
         static IHubProxy hubProxy = hubConnection.CreateHubProxy("chatHub");
 
-        // PlatformManagement functions
-        public void RegisterPlatform(IPmPlatformManagement platformManagement, string platformName)
-        {
-            PlatformType platformType = (PlatformType)Enum.Parse(typeof(PlatformType), platformName);
-            if (platformName == "DS1103")
-            {
-                IPmDS1103RegisterInfo registrationInfo = (IPmDS1103RegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
-                platformManagement.RegisterPlatform(registrationInfo);                
-            }
-            if (platformName=="DS1006")
-            {
-                // platformManagement.ClearSystem(false);
-                IPmDS1006RegisterInfo registrationInfo = (IPmDS1006RegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
-                registrationInfo.ConnectionType = InterfaceConnectionType.Bus;
-                registrationInfo.PortAddress = 768;
-                platformManagement.RegisterPlatform(registrationInfo);
-            }
-            if (platformName=="MABX")
-            {
-                IPmMABXRegisterInfo registrationInfo = (IPmMABXRegisterInfo)platformManagement.CreatePlatformRegistrationInfo(platformType);
-                platformManagement.RegisterPlatform(registrationInfo);
-            }
-        }
-        public void RegisterPlatformEvents(IPmPlatformManagement platformManagement)
-        {
-            IPmPlatformManagementEvents platformManagementEvents = (IPmPlatformManagementEvents)platformManagement;
-            platformManagementEvents.PlatformAdded += PlatformManagementEvents_PlatformAdded;
-            platformManagementEvents.PlatformRemoving += PlatformManagementEvents_PlatformRemoving;
-            platformManagementEvents.PlatformConnected += PlatformManagementEvents_PlatformConnected;
-            platformManagementEvents.PlatformDisconnected += PlatformManagementEvents_PlatformDisconnected;
-            platformManagementEvents.RealTimeApplicationStarted += PlatformManagementEvents_RealTimeApplicationStarted;
-            platformManagementEvents.RealTimeApplicationStopped += PlatformManagementEvents_RealTimeApplicationStopped;
-        }
-        public string ActiveVariableDescription(IPmPlatformManagement platformManagement)
-        {
-            string activeVariableDescription = "";
-            Type platformType = platformManagement.Platforms.Item(0).GetType();
-            if (platformType==typeof(IPmDS1103Platform))
-            {
-                IPmDS1103Platform platform = (IPmDS1103Platform)platformManagement.Platforms.Item(0);
-                activeVariableDescription = platform.ActiveVariableDescription.ToString();
-            }
-            if (platformType==typeof(IPmMABXPlatform))
-            {
-                IPmMABXPlatform platform = (IPmMABXPlatform)platformManagement.Platforms.Item(0);
-                activeVariableDescription = platform.ActiveVariableDescription.ToString();
-            }
-            return activeVariableDescription;
-        }
         // Mainwindow
         public MainWindow()
         {
 
-            // Events
-            RegisterPlatformEvents(platformManagement);
             hubConnection.StateChanged += new Action<StateChange>(hubConnectionStateChangedEvent);
-            // calibrationManagementEvents = (IXaCalibrationManagementEvents)this.ControlDeskApplication.CalibrationManagement
 
             // Initialise GUI
             InitializeComponent();
 
             // Update GUI
-            update_platform_comboBox();
-            update_platform_listBox();
             update_variable_listBox();
 
             // D3 DEMO
@@ -145,35 +79,6 @@ namespace WpfApplicationClient
             }
         }
    
-        // PlatformManagementEvents
-        private void PlatformManagementEvents_RealTimeApplicationStopped(object Platform)
-        {
-            update_read_xil_variable_button(false);
-            update_variable_listBox();
-        }
-        private void PlatformManagementEvents_RealTimeApplicationStarted(object Platform)
-        {
-            update_read_xil_variable_button(true);
-            update_variable_listBox();
-        }
-        private void PlatformManagementEvents_PlatformConnected(object Platform)
-        {
-            update_platform_listBox();
-            string activeVariableDescription = ActiveVariableDescription(platformManagement);
-        }
-        private void PlatformManagementEvents_PlatformDisconnected(object Platform)
-        {
-            update_platform_listBox();
-        }
-        private void PlatformManagementEvents_PlatformRemoving(object Platform)
-        {
-            update_platform_listBox();
-        }
-        private void PlatformManagementEvents_PlatformAdded(object Platform)
-        {
-            update_platform_listBox();
-        }
-
         // HubConnectionEvents
         private async void hubConnectionStateChangedEvent(StateChange obj)
         {
@@ -214,27 +119,6 @@ namespace WpfApplicationClient
                     variable_listBox.Dispatcher.Invoke(new Action(() => variable_listBox.Items.Add(item)));
                 }
             }
-        }
-        private void update_platform_listBox()
-        {
-            platform_listBox.Dispatcher.Invoke(new Action(() => platform_listBox.Items.Clear()));
-            foreach (string item in (IPmPlatformNames)platformManagement.Platforms.UniqueNames)
-            {
-                platform_listBox.Dispatcher.Invoke(new Action(() => platform_listBox.Items.Add(item)));
-            }
-            platform_listBox.Dispatcher.Invoke(new Action(() => platform_listBox.SelectedIndex = 0));
-        }
-        private void update_platform_comboBox()
-        {
-            foreach (string item in Enum.GetNames(typeof(PlatformType)))
-            {
-                platform_comboBox.Items.Add(item);
-            }
-        }
-        private void update_variableDescription_listBox()
-        {
-            variableDescription_listBox.Dispatcher.Invoke(new Action(() => variableDescription_listBox.Items.Clear()));
-            // TO BE COMPLETED
         }
 
         // Shutdown
@@ -323,43 +207,6 @@ namespace WpfApplicationClient
             {
                 // throw;
             }  
-        }
-        private void register_xil_button_Click(object sender, RoutedEventArgs e)
-        {
-            if (platform_comboBox.SelectedItem != null)
-            {
-                string platformName = platform_comboBox.SelectedItem.ToString();
-                try
-                {
-                    RegisterPlatform(platformManagement, platformName);
-                }
-                catch (Exception ex)
-                {
-                    status_message_text.Text = ex.Message;
-                }
-                update_platform_listBox();
-                try
-                {
-                    string activeVariableDescription = ActiveVariableDescription(platformManagement);
-                    status_message_text.Text = activeVariableDescription;
-                }
-                catch (Exception ex)
-                {
-                    status_message_text.Text = ex.Message;
-                }
-            }
-            
-        }
-        private void clear_xil_button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                platformManagement.ClearSystem(true);
-            }
-            catch (Exception ex)
-            {
-                status_message_text.Text = ex.Message;
-            }
         }
         private void read_xil_variable_button_Click(object sender, RoutedEventArgs e)
         {
