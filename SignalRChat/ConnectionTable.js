@@ -35,6 +35,10 @@
                 time: {
                     title: 'MAPort DAQ time',
                     width: '23%'
+                },
+                alarm: {
+                    title: 'Alarm',
+                    width: '23%'
                 }
             }
         });

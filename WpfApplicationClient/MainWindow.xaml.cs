@@ -31,10 +31,6 @@ namespace WpfApplicationClient
     }
     public partial class MainWindow : Window
     {
-        // OK to have this "GLOBAL" ?
-        // Why must proxy be STATIC ?
-        // Why / how does IISExpress automatically startup when debugging this project (not related to SignalRChat in which server runs)
-
         // Dynamic data point
         ObservableDataSource<Point> source1 = null;
 
@@ -55,7 +51,6 @@ namespace WpfApplicationClient
         // Mainwindow
         public MainWindow()
         {
-
             hubConnection.StateChanged += new Action<StateChange>(hubConnectionStateChangedEvent);
 
             // Initialise GUI
@@ -84,7 +79,7 @@ namespace WpfApplicationClient
         {
             switch (obj.NewState)
             {
-                case Microsoft.AspNet.SignalR.Client.ConnectionState.Connected:
+                case ConnectionState.Connected:
                     await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connected"));
                     // Worker hubConnectionWorker = new Worker(hubConnection, hubProxy, maPort, source1);
                     // AWAIT VERSUS THREADING  ???
@@ -92,13 +87,13 @@ namespace WpfApplicationClient
                     await DoWork();
                     // workerThread.Start();
                     break;
-                case Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting:
+                case ConnectionState.Connecting:
                     await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Connecting"));
                     break;
-                case Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected:
+                case ConnectionState.Disconnected:
                     await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Disconnected"));
                     break;
-                case Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting:
+                case ConnectionState.Reconnecting:
                     await textBlock.Dispatcher.BeginInvoke(new Action(() => textBlock.Text = "Reconnecting"));
                     break;
             }

@@ -19,7 +19,8 @@ function AddRecord(identifier) {
             identifier: identifier,
             ip: "1.2.3.4",
             ping: "1",
-            time: "OFFLINE"
+            time: "OFFLINE",
+            alarm: "None"
         },
         clientOnly: true
     });
